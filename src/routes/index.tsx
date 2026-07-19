@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
   component: CopilotPage,
 });
 
-const WEBHOOK_URL = ""; // Set your n8n webhook URL here when ready
+const WEBHOOK_URL = "https://sofonias-m.app.n8n.cloud/webhook-test/cv-copilot";
 const WEBHOOK_TIMEOUT_MS = 120_000;
 
 const STATUSES = ["Applied", "Reviewed", "Interviewing", "Offer", "Rejected"] as const;
