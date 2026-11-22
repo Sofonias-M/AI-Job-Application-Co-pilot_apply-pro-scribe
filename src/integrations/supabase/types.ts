@@ -20,6 +20,7 @@ export type Database = {
           company: string
           created_at: string
           id: string
+          owner_key: string | null
           role: string
           score_after: number | null
           status: string
@@ -29,6 +30,7 @@ export type Database = {
           company: string
           created_at?: string
           id?: string
+          owner_key?: string | null
           role: string
           score_after?: number | null
           status?: string
@@ -38,6 +40,7 @@ export type Database = {
           company?: string
           created_at?: string
           id?: string
+          owner_key?: string | null
           role?: string
           score_after?: number | null
           status?: string

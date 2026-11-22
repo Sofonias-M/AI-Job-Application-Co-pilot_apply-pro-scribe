@@ -1,7 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  addApplication,
+  listApplications,
+  updateApplicationStatus,
+} from "@/lib/tracker.functions";
+
+function getOwnerKey(): string {
+  const k = "jac-owner-key";
+  let v = localStorage.getItem(k);
+  if (!v) {
+    v = crypto.randomUUID();
+    localStorage.setItem(k, v);
+  }
+  return v;
+}
 import {
   analyzeApplication,
   generateJobDescription,
@@ -220,6 +234,9 @@ ${sections
 function CopilotPage() {
   const genJd = useServerFn(generateJobDescription);
   const analyzeAi = useServerFn(analyzeApplication);
+  const listApps = useServerFn(listApplications);
+  const addApp = useServerFn(addApplication);
+  const updateApp = useServerFn(updateApplicationStatus);
 
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
@@ -244,11 +261,12 @@ function CopilotPage() {
   }, []);
 
   async function loadRows() {
-    const { data, error } = await supabase
-      .from("job_applications")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) setRows(data as TrackerRow[]);
+    try {
+      const data = await listApps({ data: { ownerKey: getOwnerKey() } });
+      setRows(data as TrackerRow[]);
+    } catch {
+      /* ignore */
+    }
   }
 
   function validate(): boolean {
@@ -341,12 +359,18 @@ function CopilotPage() {
     );
 
     // Insert tracker row
-    await supabase.from("job_applications").insert({
-      company: company.trim(),
-      role: role.trim(),
-      score_after: Math.round(result.score_after),
-      status: "Applied",
-    });
+    try {
+      await addApp({
+        data: {
+          ownerKey: getOwnerKey(),
+          company: company.trim(),
+          role: role.trim(),
+          score_after: Math.max(0, Math.min(100, Math.round(result.score_after))),
+        },
+      });
+    } catch {
+      /* ignore */
+    }
     await loadRows();
 
     setAnalyzing(false);
@@ -355,7 +379,7 @@ function CopilotPage() {
 
   async function updateStatus(id: string, status: Status) {
     setRows((r) => r.map((row) => (row.id === id ? { ...row, status } : row)));
-    await supabase.from("job_applications").update({ status }).eq("id", id);
+    await updateApp({ data: { ownerKey: getOwnerKey(), id, status } });
   }
 
   const boostLabel = useMemo(() => {
