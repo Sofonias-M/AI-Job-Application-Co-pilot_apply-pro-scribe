@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
   component: CopilotPage,
 });
 
-const WEBHOOK_URL = "https://sofonias-m.app.n8n.cloud/webhook-test/cv-copilot";
+const WEBHOOK_URL = "https://hook.eu1.make.com/8akx0m9xln3sypqboy0d86msxag3wly8";
 const WEBHOOK_TIMEOUT_MS = 120_000;
 
 const STATUSES = ["Applied", "Reviewed", "Interviewing", "Offer", "Rejected"] as const;
