@@ -216,11 +216,10 @@ function downloadPdf(title: string, sections: { heading: string; body: string }[
   h2 { font-size: 15px; margin: 22px 0 8px; color: #014c1f; border-bottom: 1px solid #d4a843; padding-bottom: 4px; }
   pre { font-family: Georgia, serif; white-space: pre-wrap; font-size: 12px; margin: 0; }
 </style></head><body>
-<h1>${title}</h1>
-${sections
+ ${sections
   .map(
-    (s) =>
-      `<h2>${s.heading}</h2><pre>${s.body
+    (s, i) =>
+      `${sections.length > 1 && i > 0 ? `<h2>${s.heading}</h2>` : ""}<pre>${s.body
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")}</pre>`,
   )
